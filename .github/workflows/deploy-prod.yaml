@@ -51,7 +51,8 @@ jobs:
           port: ${{ secrets.PROD_SSH_PORT }}
           script: |
             pwd
-            docker stop sotreus-frontend || true && docker image rm ghcr.io/netsepio/sotreus-frontend:prod
+            docker stop sotreus-frontend && docker rm sotreus-frontend
+            docker rmi ghcr.io/netsepio/sotreus-frontend:prod
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
             docker pull ghcr.io/netsepio/sotreus-frontend:prod
-            docker run --name="sotreus-frontend" --rm -p 4040:8080 --net=bridge -d ghcr.io/netsepio/sotreus-frontend:prod
+            docker run --name="sotreus-frontend"  --restart=unless-stopped -p 4040:8080 --net=bridge -d ghcr.io/netsepio/sotreus-frontend:prod
